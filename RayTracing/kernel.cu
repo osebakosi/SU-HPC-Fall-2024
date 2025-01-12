@@ -92,7 +92,7 @@ __device__ float3 trace(Ray ray, Sphere* spheres, int num_spheres, Light* lights
         }
     }
     
-    if (closest_sphere == -1) return make_float3(0.2f, 0.3f, 0.5f); // Sky color
+    if (closest_sphere == -1) return make_float3(0.2f, 0.3f, 0.5f);
     
     Sphere sphere = spheres[closest_sphere];
     float3 hit_point = ray.origin + ray.direction * closest_t;
@@ -103,7 +103,6 @@ __device__ float3 trace(Ray ray, Sphere* spheres, int num_spheres, Light* lights
     for (int i = 0; i < num_lights; i++) {
         float3 light_dir = normalize(lights[i].position - hit_point);
         
-        // Shadow check
         Ray shadow_ray;
         shadow_ray.origin = hit_point + normal * EPSILON;
         shadow_ray.direction = light_dir;
@@ -126,7 +125,6 @@ __device__ float3 trace(Ray ray, Sphere* spheres, int num_spheres, Light* lights
         }
     }
     
-    // Reflection
     if (depth < MAX_DEPTH) {
         Ray reflect_ray;
         reflect_ray.origin = hit_point + normal * EPSILON;
@@ -164,7 +162,6 @@ extern "C" __global__ void render(uchar4* output, int width, int height,
     
     float3 color = trace(ray, spheres, num_spheres, lights, num_lights, 0);
     
-    // Tone mapping and gamma correction
     color.x = fminf(color.x, 1.0f);
     color.y = fminf(color.y, 1.0f);
     color.z = fminf(color.z, 1.0f);
